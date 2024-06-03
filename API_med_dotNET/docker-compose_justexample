@@ -1,0 +1,31 @@
+﻿version: '3.9'
+
+services:
+  mssql-server:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "Pa55word2024"
+    ports:
+      - "1433:1433"
+    networks:
+      - theNetwork
+
+  api-dotnet:
+    build: .
+    environment:
+      DBServer: "mssql-server"
+      DBPort: "1433"
+      DBUser: "SA"
+      DBPassword: "Pa55word2024"
+      DBDatabaseName: "MyDocker"
+    ports:
+      - "80:80"
+    networks:
+      - theNetwork
+    depends_on:
+      - mssql-server
+
+networks:
+  theNetwork:
+    driver: bridge

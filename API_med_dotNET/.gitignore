@@ -1,0 +1,13 @@
+.vs/
+
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=tcp:dotnetapi.database.windows.net,1433;Initial Catalog=API_med_dotNET;Persist Security Info=False;User ID=admin123;**********'''''''**********'' Timeout=30;"
+  },
+  "AllowedHosts": "*"
