@@ -8,7 +8,7 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["API_med_dotNET.csproj", "."]
+COPY ["API_med_dotNET/API_med_dotNET.csproj", "."]
 #COPY ["API_med_dotNET/API_med_dotNET.csproj", "API_med_dotNET/"]
 #COPY . .
 RUN dotnet restore "./API_med_dotNET.csproj"
