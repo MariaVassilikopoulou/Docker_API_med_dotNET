@@ -8,21 +8,18 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["API_med_dotNET.csproj", "."]
-#COPY ["API_med_dotNET/API_med_dotNET.csproj", "API_med_dotNET/"]
-#COPY . .
-RUN dotnet restore "./API_med_dotNET.csproj"
-#RUN dotnet restore "/API_med_dotNET.csproj"
+COPY ["Docker_api_med_dotNET.sln", "."]
+COPY ["API_med_dotNET/API_med_dotNET.csproj", "API_med_dotNET/"]
+RUN dotnet restore "API_med_dotNET/API_med_dotNET.csproj"
 COPY . .
-WORKDIR "/src/."
-RUN dotnet build "./API_med_dotNET.csproj" -c $BUILD_CONFIGURATION -o /app/build
-#RUN dotnet build "./API_med_dotNET/API_med_dotNET.csproj" -c $BUILD_CONFIGURATION -o /app/build
+WORKDIR "/src/API_med_dotNET"
+RUN dotnet build "API_med_dotNET.csproj" -c Release -o /app/build
+
 
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./API_med_dotNET.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
-#RUN dotnet publish "./API_med_dotNET/API_med_dotNET.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "API_med_dotNET.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
