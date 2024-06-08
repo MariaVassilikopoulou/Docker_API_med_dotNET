@@ -8,20 +8,22 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
+
+# Copy the solution file first to leverage Docker's layer caching
 COPY ["Docker_api_med_dotNET.sln", "."]
+
+# Then copy the project files and restore dependencies
 COPY ["API_med_dotNET/API_med_dotNET.csproj", "API_med_dotNET/"]
 RUN dotnet restore "API_med_dotNET/API_med_dotNET.csproj"
+
+# Copy the entire project directory
 COPY . .
+
 WORKDIR "/src/API_med_dotNET"
-RUN dotnet build "API_med_dotNET.csproj" -c Release -o /app/build
+RUN dotnet build "API_med_dotNET.csproj" -c ${BUILD_CONFIGURATION} -o /app/build
+RUN dotnet publish "API_med_dot_NET.csproj" -c ${BUILD_CONFIGURATION} -o /app/publish
 
-
-
-FROM build AS publish
-ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "API_med_dotNET.csproj" -c Release -o /app/publish
-
-FROM base AS final
+FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS runtime
 WORKDIR /app
-COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "API_med_dotNET.dll"]
+COPY --from=build /app/publish .
+ENTRYPOINT ["dotnet", "API_med_dot_NET.dll"]
