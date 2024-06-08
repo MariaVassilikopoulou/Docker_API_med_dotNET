@@ -13,23 +13,22 @@ services:
       - "1433:1433"
     networks:
       - theNetwork
+
   api_med_dotnet:
-    image: ${DOCKER_REGISTRY-}apimeddotnet
+    image: apimeddotnet
     build:
       context: .
       dockerfile: API_med_dotNET/Dockerfile
     environment:
-      - DBServer=mssql-server
-      - DBPort=1433
-      - DBUser=SA
-      - DBPassword=Pa55word2024
-      - DBDatabaseName=MyDocker
+      DBServer: mssql-server
+      DBPort: 1433
+      DBUser: SA
+      DBPassword: Pa55word2024
+      DBDatabaseName: MyDocker
     ports:
-      # - "80:80"
-      # - "443:443"
-      - "8080:8080"
-      
+      - "8080:80"
+      - "443:443"
     networks:
       - theNetwork
     depends_on:
-      - mssql-server 
+      - mssql-server
