@@ -1,4 +1,3 @@
-
 using API_med_dotNET.Models;
 using API_med_dotNET.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -17,11 +16,24 @@ namespace API_med_dotNET
             builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
             builder.Configuration.AddEnvironmentVariables();
 
-            var server = Environment.GetEnvironmentVariable("DBServer");
-            var port = Environment.GetEnvironmentVariable("DBPort");
-            var user = Environment.GetEnvironmentVariable("DBUser");
-            var password = Environment.GetEnvironmentVariable("DBPassword");
-            var database = Environment.GetEnvironmentVariable("DBDatabaseName");
+            var server = Environment.GetEnvironmentVariable("DBServer") ?? "mssql-server";
+            var port = Environment.GetEnvironmentVariable("DBPort") ?? "1433";
+            var user = Environment.GetEnvironmentVariable("DBUser") ?? "SA";
+            var password = Environment.GetEnvironmentVariable("DBPassword") ?? "Pa55word2024";
+            var database = Environment.GetEnvironmentVariable("DBDatabaseName") ?? "MyDocker";
+
+            Console.WriteLine($"DBServer: {server}");
+            Console.WriteLine($"DBPort: {port}");
+            Console.WriteLine($"DBUser: {user}");
+            Console.WriteLine($"DBPassword: {password}");
+            Console.WriteLine($"DBDatabaseName: {database}");
+
+            if (string.IsNullOrEmpty(server) || string.IsNullOrEmpty(port) || string.IsNullOrEmpty(user) || string.IsNullOrEmpty(password) || string.IsNullOrEmpty(database))
+            {
+                Console.WriteLine("One or more environment variables are not set.");
+                Console.WriteLine($"DBServer: {server}, DBPort: {port}, DBUser: {user}, DBPassword: {password}, DBDatabaseName: {database}");
+                throw new InvalidOperationException("Database configuration is incomplete.");
+            }
 
             var connectionString = $"Server={server},{port};Database={database};User ID={user};Password={password};TrustServerCertificate=True;Connect Timeout=30;Encrypt=False;Application Intent=ReadWrite";
 
@@ -29,7 +41,10 @@ namespace API_med_dotNET
 
             // Add services to the container
             builder.Services.AddDbContext<DataContext>(options =>
-                options.UseSqlServer(connectionString));
+                options.UseSqlServer(connectionString, sqlOptions =>
+                {
+                    sqlOptions.EnableRetryOnFailure(); // Enable retry logic for transient errors
+                }).EnableSensitiveDataLogging()); // Log sensitive data to help diagnose issues
 
             builder.Services.AddSwaggerGen(c =>
             {
@@ -60,6 +75,11 @@ namespace API_med_dotNET
             catch (Exception ex)
             {
                 Console.WriteLine($"Migration error: {ex.Message}");
+                if (ex.InnerException != null)
+                {
+                    Console.WriteLine($"Inner Exception: {ex.InnerException.Message}");
+                }
+                return;
             }
 
             // Configure the HTTP request pipeline
@@ -120,3 +140,4 @@ namespace API_med_dotNET
         }
     }
 }
+
