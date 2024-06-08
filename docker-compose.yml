@@ -15,7 +15,7 @@ services:
       - theNetwork
 
   api_med_dotnet:
-    image: apimeddotnet
+    image:  api_med_dotnet
     build:
       context: .
       dockerfile: API_med_dotNET/Dockerfile
