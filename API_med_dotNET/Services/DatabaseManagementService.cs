@@ -1,4 +1,6 @@
-﻿namespace API_med_dotNET.Services
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace API_med_dotNET.Services
 {
     public class DatabaseManagementService
     {

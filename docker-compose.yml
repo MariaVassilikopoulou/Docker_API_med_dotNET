@@ -1,5 +1,3 @@
-
-
 networks:
   theNetwork:
 
@@ -7,24 +5,17 @@ services:
   mssql-server:
     image: mcr.microsoft.com/mssql/server:2019-latest
     environment:
-      ACCEPT_EULA: "Y"
-      SA_PASSWORD: "Pa55word2024"
+      ACCEPT_EULA: SA
+      SA_PASSWORD: Pa55word2024
     ports:
       - "1433:1433"
     networks:
       - theNetwork
 
   api_med_dotnet:
-    image:  api_med_dotnet
     build:
       context: .
       dockerfile: API_med_dotNET/Dockerfile
-    environment:
-      DBServer: mssql-server
-      DBPort: 1433
-      DBUser: SA
-      DBPassword: Pa55word2024
-      DBDatabaseName: MyDocker
     ports:
       - "8080:80"
       - "443:443"
